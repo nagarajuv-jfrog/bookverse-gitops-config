@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
     inputs:
       version:
-        description: 'The version of the bookverse-platform release bundle to promote (e.g., 4.0.1)'
+        description: 'The version of the hc-bookverse-platform release bundle to promote (e.g., 4.0.1)'
         required: true
         default: '1.0.'
 run-name: Promote ${{ github.event.inputs.bundle_name }} v${{ github.event.inputs.bundle_ver }} to PROD
@@ -57,13 +57,13 @@ jobs:
 
           jf evd create --predicate commit-review.json \
           --predicate-type "Attribute Report" --markdown commit-review.md \
-          --release-bundle bookverse-platform --release-bundle-version ${{ github.event.inputs.version }} \
+          --release-bundle hc-bookverse-platform --release-bundle-version ${{ github.event.inputs.version }} \
           --project hc-bookverse --key-alias "nag-keys" --key "${{ secrets.BOOKVERSE_KEY }}"
 
       - name: Promote to DEV
         run: |
-          echo "Promoting bookverse-platform version ${{ github.event.inputs.version }} to DEV..."
-          jfrog rbp bookverse-platform ${{ github.event.inputs.version }} DEV \
+          echo "Promoting hc-bookverse-platform version ${{ github.event.inputs.version }} to DEV..."
+          jfrog rbp hc-bookverse-platform ${{ github.event.inputs.version }} DEV \
             --project=bookverse \
             --include-repos='bookverse-docker-external' \
             --promotion-type=move
@@ -119,13 +119,13 @@ jobs:
 
           jf evd create --predicate dev-smoke-test.json \
           --predicate-type "Test Results" --markdown dev-smoke-test.md \
-          --release-bundle bookverse-platform --release-bundle-version ${{ github.event.inputs.version }} \
+          --release-bundle hc-bookverse-platform --release-bundle-version ${{ github.event.inputs.version }} \
           --project hc-bookverse --key-alias "nag-keys" --key "${{ secrets.BOOKVERSE_KEY }}"
 
       - name: Promote to QA
         run: |
-          echo "Promoting bookverse-platform version ${{ github.event.inputs.version }} to QA..."
-          jfrog rbp bookverse-platform ${{ github.event.inputs.version }} QA \
+          echo "Promoting hc-bookverse-platform version ${{ github.event.inputs.version }} to QA..."
+          jfrog rbp hc-bookverse-platform ${{ github.event.inputs.version }} QA \
             --project=bookverse \
             --include-repos='bookverse-docker-external' \
             --promotion-type=move
@@ -202,12 +202,12 @@ jobs:
 
           jf evd create --predicate qa-test-results.json \
           --predicate-type "Test Results" --markdown qa-test-results.md \
-          --release-bundle bookverse-platform --release-bundle-version ${{ github.event.inputs.version }} \
+          --release-bundle hc-bookverse-platform --release-bundle-version ${{ github.event.inputs.version }} \
           --project hc-bookverse --key-alias "nag-keys" --key "${{ secrets.BOOKVERSE_KEY }}"
 
           jf evd create --predicate qa-jira-issues.json \
           --predicate-type "Attribute Report" --markdown qa-jira-issues.md \
-          --release-bundle bookverse-platform --release-bundle-version ${{ github.event.inputs.version }} \
+          --release-bundle hc-bookverse-platform --release-bundle-version ${{ github.event.inputs.version }} \
           --project hc-bookverse --key-alias "nag-keys" --key "${{ secrets.BOOKVERSE_KEY }}"
 
       - name: Create and Attach STAGE Sign-off & Trace Evidence (Gate to PROD)
@@ -253,18 +253,18 @@ jobs:
 
           jf evd create --predicate stage-signoff.json \
           --predicate-type "Attribute Report" --markdown stage-signoff.md \
-          --release-bundle bookverse-platform --release-bundle-version ${{ github.event.inputs.version }} \
+          --release-bundle hc-bookverse-platform --release-bundle-version ${{ github.event.inputs.version }} \
           --project hc-bookverse --key-alias "nag-keys" --key "${{ secrets.BOOKVERSE_KEY }}"
 
           jf evd create --predicate stage-runtime-trace.json \
           --predicate-type "Runtime Trace" \
-          --release-bundle bookverse-platform --release-bundle-version ${{ github.event.inputs.version }} \
+          --release-bundle hc-bookverse-platform --release-bundle-version ${{ github.event.inputs.version }} \
           --project hc-bookverse --key-alias "nag-keys" --key "${{ secrets.BOOKVERSE_KEY }}"
 
       - name: Promote to STAGE
         run: |
-          echo "Promoting bookverse-platform version ${{ github.event.inputs.version }} to STAGE..."
-          jfrog rbp bookverse-platform ${{ github.event.inputs.version }} STAGE \
+          echo "Promoting hc-bookverse-platform version ${{ github.event.inputs.version }} to STAGE..."
+          jfrog rbp hc-bookverse-platform ${{ github.event.inputs.version }} STAGE \
             --project=bookverse \
             --include-repos='bookverse-docker-external' \
             --promotion-type=move
@@ -274,11 +274,11 @@ jobs:
         run: |
           # Define the new version being promoted
           NEW_VERSION=${{ github.event.inputs.version }}
-          RELEASE_BUNDLE_NAME=bookverse-platform
+          RELEASE_BUNDLE_NAME=hc-bookverse-platform
           JFROG_RECORDS_API_URL="${{ vars.JFROG_URL }}/lifecycle/api/v2/release_bundle/records/$RELEASE_BUNDLE_NAME"
 
           # 1. Promote the new version to the PROD repository
-          jfrog rbp bookverse-platform ${{ github.event.inputs.version }} PROD \
+          jfrog rbp hc-bookverse-platform ${{ github.event.inputs.version }} PROD \
             --project=bookverse \
             --include-repos='bookverse-docker-external-prod' \
             --promotion-type=move

@@ -7,7 +7,7 @@ on:
       bundle_name:
         description: 'name of the bundle'
         required: true
-        default: 'bookverse-platform'
+        default: 'hc-bookverse-platform'
       bundle_ver:
         description: 'bundle bersion'
         required: true
@@ -44,11 +44,11 @@ jobs:
 
           echo "BUNDLE_NAME=${BUNDLE_NAME}" >> $GITHUB_ENV
 
-          if [[ "${BUNDLE_NAME}" == "bookverse-platform" ]]; then
-            echo "Bundle name is 'bookverse-platform'. Proceeding with deployment."
+          if [[ "${BUNDLE_NAME}" == "hc-bookverse-platform" ]]; then
+            echo "Bundle name is 'hc-bookverse-platform'. Proceeding with deployment."
             echo "should_run=true" >> $GITHUB_OUTPUT
           else
-            echo "This workflow only handles 'bookverse-platform', but received '${BUNDLE_NAME}'. Gracefully exiting."
+            echo "This workflow only handles 'hc-bookverse-platform', but received '${BUNDLE_NAME}'. Gracefully exiting."
             echo "should_run=false" >> $GITHUB_OUTPUT
           fi
 

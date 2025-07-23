@@ -50,7 +50,7 @@ jobs:
 
           # Otherwise, find the latest and increment the patch.
           echo "Finding latest platform version to auto-increment..."
-          LATEST_PLATFORM_VERSION=$(curl -s -H "Authorization: Bearer ${{ secrets.JFROG_ACCESS_TOKEN }}" "${{ vars.JFROG_URL }}/lifecycle/api/v2/release_bundle/records/bookverse-platform?project=bookverse&order_by=release_bundle_semver&direction=desc" | jq -r '.release_bundles[0].release_bundle_version')
+          LATEST_PLATFORM_VERSION=$(curl -s -H "Authorization: Bearer ${{ secrets.JFROG_ACCESS_TOKEN }}" "${{ vars.JFROG_URL }}/lifecycle/api/v2/release_bundle/records/hc-bookverse-platform?project=hc-bookverse&order_by=release_bundle_semver&direction=desc" | jq -r '.release_bundles[0].release_bundle_version')
 
           if [[ "$LATEST_PLATFORM_VERSION" == "null" ]]; then
             echo "No previous platform bundle found. Starting with 4.0.0."
@@ -74,7 +74,7 @@ jobs:
           for SERVICE in "${SERVICES[@]}"; do
             echo "Finding latest version for $SERVICE..."
             # Use the API to get all versions for a bundle, sorted by SemVer descending, then use jq to get the first one
-            LATEST_VERSION=$(curl -s -H "Authorization: Bearer ${{ secrets.JFROG_ACCESS_TOKEN }}" "${{ vars.JFROG_URL }}/lifecycle/api/v2/release_bundle/records/${SERVICE}?project=bookverse&order_by=release_bundle_semver&direction=desc" | jq -r '.release_bundles[0].release_bundle_version')
+            LATEST_VERSION=$(curl -s -H "Authorization: Bearer ${{ secrets.JFROG_ACCESS_TOKEN }}" "${{ vars.JFROG_URL }}/lifecycle/api/v2/release_bundle/records/${SERVICE}?project=hc-bookverse&order_by=release_bundle_semver&direction=desc" | jq -r '.release_bundles[0].release_bundle_version')
 
             if [[ "$LATEST_VERSION" == "null" ]]; then
               echo "::error::Could not find any release bundles for $SERVICE. Please ensure at least one has been created."
@@ -101,7 +101,7 @@ jobs:
 
           # Construct the JSON payload and pipe it directly to curl
           jq -n \
-            --arg name "bookverse-platform" \
+            --arg name "hc-bookverse-platform" \
             --arg version "$PLATFORM_VERSION" \
             --argjson sources "$SOURCES_JSON" \
             '{
@@ -135,7 +135,7 @@ jobs:
           echo "Selected Cadence: $RELEASE_CADENCE"
           echo "Selected Feature ID: $FEATURE_ID"
 
-          jfrog rba bookverse-platform ${{ steps.determine_version.outputs.platform_version }} \
+          jfrog rba hc-bookverse-platform ${{ steps.determine_version.outputs.platform_version }} \
             --tag=$RELEASE_CADENCE \
             --properties="release.cadence=$RELEASE_CADENCE;feature.name=$FEATURE_ID;branch=${{ github.ref_name }};promoted_by=${{ github.actor }}"
 
@@ -157,5 +157,5 @@ jobs:
 
           jf evd create --predicate build-link-evidence.json \
           --predicate-type "Build Link"  --markdown build-link-evidence.md \
-          --release-bundle bookverse-platform --release-bundle-version ${{ steps.determine_version.outputs.platform_version }} \
+          --release-bundle hc-bookverse-platform --release-bundle-version ${{ steps.determine_version.outputs.platform_version }} \
           --project hc-bookverse --key-alias "nag-keys" --key "${{ secrets.BOOKVERSE_KEY }}"

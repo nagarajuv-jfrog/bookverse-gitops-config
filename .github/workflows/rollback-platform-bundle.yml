@@ -4,10 +4,10 @@ on:
   workflow_dispatch:
     inputs:
       bundle_version:
-        description: 'The version of the bookverse-platform release bundle to roll back (e.g., 4.0.1)'
+        description: 'The version of the hc-bookverse-platform release bundle to roll back (e.g., 4.0.1)'
         required: true
 
-run-name: Rollback bookverse-platform v${{ github.event.inputs.bundle_version }}
+run-name: Rollback hc-bookverse-platform v${{ github.event.inputs.bundle_version }}
 
 jobs:
   rollback-and-promote:
@@ -34,7 +34,7 @@ jobs:
       - name: Get All Platform Versions
         id: get_versions
         run: |
-          ALL_VERSIONS_JSON=$(curl -s -H "Authorization: Bearer ${{ secrets.JFROG_ACCESS_TOKEN }}" "${{ vars.JFROG_URL }}/lifecycle/api/v2/release_bundle/records/bookverse-platform?project=bookverse&order_by=release_bundle_semver&direction=desc")
+          ALL_VERSIONS_JSON=$(curl -s -H "Authorization: Bearer ${{ secrets.JFROG_ACCESS_TOKEN }}" "${{ vars.JFROG_URL }}/lifecycle/api/v2/release_bundle/records/hc-bookverse-platform?project=hc-bookverse&order_by=release_bundle_semver&direction=desc")
           
           # Use heredoc to safely handle multi-line JSON output
           (
@@ -52,7 +52,7 @@ jobs:
           LATEST_VERSION=$(echo "$ALL_VERSIONS" | jq -r '.release_bundles[0].release_bundle_version')
           
           echo "Rolling back version $ROLLBACK_VERSION..."
-          ROLLBACK_API_URL="${{ vars.JFROG_URL }}/lifecycle/api/v2/promotion/rollback/bookverse-platform/$ROLLBACK_VERSION?project=bookverse&async=false&from_environment=PROD"
+          ROLLBACK_API_URL="${{ vars.JFROG_URL }}/lifecycle/api/v2/promotion/rollback/hc-bookverse-platform/$ROLLBACK_VERSION?project=bookverse&async=false&from_environment=PROD"
           
           # Perform the rollback API call with an empty body.
           curl -X POST -H "Authorization: Bearer ${{ secrets.JFROG_ACCESS_TOKEN }}" "$ROLLBACK_API_URL"
@@ -66,9 +66,9 @@ jobs:
             echo "Fetching bundles from PROD to find new latest version..."
             PROD_BUNDLES_JSON=$(curl -s -H "Authorization: Bearer ${{ secrets.JFROG_ACCESS_TOKEN }}" "${{ vars.JFROG_URL }}/lifecycle/api/v2/promotion/release-bundles-by-environment/PROD?project=bookverse&order_by=release_bundle_semver&direction=desc")
             
-            # Filter for the 'bookverse-platform' bundle and get the latest version.
+            # Filter for the 'hc-bookverse-platform' bundle and get the latest version.
             # This updated jq command safely handles cases where .release_bundles is null or empty.
-            NEW_LATEST_VERSION=$(echo "$PROD_BUNDLES_JSON" | jq -r 'if .release_bundles and (.release_bundles | length > 0) then (.release_bundles | map(select(.release_bundle_name == "bookverse-platform")) | .[0].release_bundle_version) else "null" end')
+            NEW_LATEST_VERSION=$(echo "$PROD_BUNDLES_JSON" | jq -r 'if .release_bundles and (.release_bundles | length > 0) then (.release_bundles | map(select(.release_bundle_name == "hc-bookverse-platform")) | .[0].release_bundle_version) else "null" end')
 
             if [ "$NEW_LATEST_VERSION" == "null" ]; then
               echo "No other version found in PROD to become the new 'latest'."
@@ -91,13 +91,13 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           echo "Triggering promotion-to-commit workflow for new latest version: $NEW_LATEST"
-          gh workflow run promotion-to-commit.yml -f bundle_name=bookverse-platform -f bundle_ver=$NEW_LATEST
+          gh workflow run promotion-to-commit.yml -f bundle_name=hc-bookverse-platform -f bundle_ver=$NEW_LATEST
         
       - name: Quarantine Rolled-Back Version
         env:
           ROLLED_BACK_VERSION: ${{ github.event.inputs.bundle_version }}
         run: |
           echo "Promoting rolled-back version $ROLLED_BACK_VERSION to bookverse-Quarantine..."
-          jfrog rbp bookverse-platform $ROLLED_BACK_VERSION bookverse-Quarantine --project=bookverse \
+          jfrog rbp hc-bookverse-platform $ROLLED_BACK_VERSION bookverse-Quarantine --project=bookverse \
             --include-repos='bookverse-docker-quarantine' \
             --promotion-type=move
