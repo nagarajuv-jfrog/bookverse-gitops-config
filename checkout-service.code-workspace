@@ -1,0 +1,14 @@
+{
+	"folders": [
+		{
+			"path": "../checkout-service"
+		},
+		{
+			"path": "."
+		},
+		{
+			"path": "../inventory-service"
+		}
+	],
+	"settings": {}
+}

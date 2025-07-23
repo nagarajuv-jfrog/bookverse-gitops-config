@@ -6,12 +6,12 @@ metadata:
 spec:
   project: default
   source:
-    repoURL: 'https://github.com/nagarajuv-jfrog/bookverse-gitops-config.git'
+    repoURL: 'https://github.com/nagarajuv-jfrog/hc-bookverse-gitops-config.git'
     targetRevision: HEAD
     path: helm/bookverse
   destination:
     server: 'https://kubernetes.default.svc'
-    namespace: bookverse
+    namespace: hc-bookverse
   syncPolicy:
     automated:
       prune: true
