@@ -158,4 +158,4 @@ jobs:
           jf evd create --predicate build-link-evidence.json \
           --predicate-type "Build Link"  --markdown build-link-evidence.md \
           --release-bundle bookverse-platform --release-bundle-version ${{ steps.determine_version.outputs.platform_version }} \
-          --project bookverse --key-alias "nag-keys" --key "${{ secrets.BOOKVERSE_KEY }}"
+          --project hc-bookverse --key-alias "nag-keys" --key "${{ secrets.BOOKVERSE_KEY }}"
