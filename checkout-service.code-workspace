@@ -8,6 +8,9 @@
 		},
 		{
 			"path": "../inventory-service"
+		},
+		{
+			"path": "../recommendations-service"
 		}
 	],
 	"settings": {}
