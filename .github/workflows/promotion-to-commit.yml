@@ -56,7 +56,7 @@ jobs:
         if: steps.check_bundle.outputs.should_run == 'true'
         run: |
           # Use a direct API call to get the platform bundle contents
-          PLATFORM_BUNDLE_CONTENTS=$(curl -s -H "Authorization: Bearer ${{ secrets.JFROG_ACCESS_TOKEN }}" "${{ vars.JFROG_URL }}/lifecycle/api/v2/release_bundle/records/${{ env.BUNDLE_NAME }}/${{ env.BUNDLE_VERSION }}?project=bookverse")
+          PLATFORM_BUNDLE_CONTENTS=$(curl -s -H "Authorization: Bearer ${{ secrets.JFROG_ACCESS_TOKEN }}" "${{ vars.JFROG_URL }}/lifecycle/api/v2/release_bundle/records/${{ env.BUNDLE_NAME }}/${{ env.BUNDLE_VERSION }}?project=hc-bookverse")
           echo "Platform Bundle Contents: $PLATFORM_BUNDLE_CONTENTS"
 
           # Define the services we need to find images for

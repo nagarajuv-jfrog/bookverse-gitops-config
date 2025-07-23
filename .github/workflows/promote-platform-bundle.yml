@@ -64,8 +64,8 @@ jobs:
         run: |
           echo "Promoting hc-bookverse-platform version ${{ github.event.inputs.version }} to DEV..."
           jfrog rbp hc-bookverse-platform ${{ github.event.inputs.version }} DEV \
-            --project=bookverse \
-            --include-repos='bookverse-docker-external' \
+            --project=hc-bookverse \
+            --include-repos='hc-bookverse-docker-external' \
             --promotion-type=move
 
       - name: Create and Attach DEV Smoke Test Evidence (QA Gate)
@@ -126,8 +126,8 @@ jobs:
         run: |
           echo "Promoting hc-bookverse-platform version ${{ github.event.inputs.version }} to QA..."
           jfrog rbp hc-bookverse-platform ${{ github.event.inputs.version }} QA \
-            --project=bookverse \
-            --include-repos='bookverse-docker-external' \
+            --project=hc-bookverse \
+            --include-repos='hc-bookverse-docker-external' \
             --promotion-type=move
 
       - name: Create and Attach QA Test & Jira Evidence (STAGE Gate)
@@ -265,8 +265,8 @@ jobs:
         run: |
           echo "Promoting hc-bookverse-platform version ${{ github.event.inputs.version }} to STAGE..."
           jfrog rbp hc-bookverse-platform ${{ github.event.inputs.version }} STAGE \
-            --project=bookverse \
-            --include-repos='bookverse-docker-external' \
+            --project=hc-bookverse \
+            --include-repos='hc-bookverse-docker-external' \
             --promotion-type=move
 
 
@@ -279,8 +279,8 @@ jobs:
 
           # 1. Promote the new version to the PROD repository
           jfrog rbp hc-bookverse-platform ${{ github.event.inputs.version }} PROD \
-            --project=bookverse \
-            --include-repos='bookverse-docker-external-prod' \
+            --project=hc-bookverse \
+            --include-repos='hc-bookverse-docker-external-prod' \
             --promotion-type=move
 
           # 2. Apply the 'latest' tag to the newly promoted version, preserving existing properties.
@@ -289,7 +289,7 @@ jobs:
           
           # 3. Use the API to find ALL OTHER release bundles currently tagged 'latest'
           echo "Searching for all other bundles tagged 'latest' to clean them up..."
-          LATEST_BUNDLES_JSON=$(curl -s -H "Authorization: Bearer ${{ secrets.JFROG_ACCESS_TOKEN }}" "$JFROG_RECORDS_API_URL?project=bookverse")
+          LATEST_BUNDLES_JSON=$(curl -s -H "Authorization: Bearer ${{ secrets.JFROG_ACCESS_TOKEN }}" "$JFROG_RECORDS_API_URL?project=hc-bookverse")
           
           # Use jq to create a list of versions to process, excluding the version we just promoted.
           PREVIOUS_LATEST_VERSIONS=$(echo "$LATEST_BUNDLES_JSON" | jq -r --arg new_ver "$NEW_VERSION" '.release_bundles[] | select(.bundle_tag == "latest" and .release_bundle_version != $new_ver) | .release_bundle_version')
@@ -301,7 +301,7 @@ jobs:
               echo "--- Processing old version: $version ---"
               
               # Fetch the specific properties for this old version
-              PROPS_JSON=$(curl -s -H "Authorization: Bearer ${{ secrets.JFROG_ACCESS_TOKEN }}" "$JFROG_RECORDS_API_URL/$version?project=bookverse")
+              PROPS_JSON=$(curl -s -H "Authorization: Bearer ${{ secrets.JFROG_ACCESS_TOKEN }}" "$JFROG_RECORDS_API_URL/$version?project=hc-bookverse")
               OLD_CADENCE_TAG=$(echo "$PROPS_JSON" | jq -r '(.properties // [])[] | select(.key == "release.cadence") | .value')
 
               if [[ -n "$OLD_CADENCE_TAG" ]]; then
