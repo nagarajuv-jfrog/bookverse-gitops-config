@@ -6,7 +6,7 @@ metadata:
 spec:
   project: default
   source:
-    repoURL: 'https://github.com/yonatanp-jfrog/bookverse-gitops-config.git'
+    repoURL: 'https://github.com/nagarajuv-jfrog/bookverse-gitops-config.git'
     targetRevision: HEAD
     path: helm/bookverse
   destination:

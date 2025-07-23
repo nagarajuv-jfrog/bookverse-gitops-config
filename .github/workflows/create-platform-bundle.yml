@@ -36,7 +36,7 @@ jobs:
           JF_URL: ${{ vars.JFROG_URL }}
           JF_USER: ${{ vars.JFROG_USER }}
           JF_ACCESS_TOKEN: ${{ secrets.JFROG_ACCESS_TOKEN }}
-          JF_PROJECT: "bookverse"
+          JF_PROJECT: "hc-bookverse"
 
       - name: Determine Next Platform Version
         id: determine_version
@@ -158,4 +158,4 @@ jobs:
           jf evd create --predicate build-link-evidence.json \
           --predicate-type "Build Link"  --markdown build-link-evidence.md \
           --release-bundle bookverse-platform --release-bundle-version ${{ steps.determine_version.outputs.platform_version }} \
-          --project bookverse --key-alias "bookverse_key" --key "${{ secrets.BOOKVERSE_KEY }}"
+          --project bookverse --key-alias "hc-bookverse_key" --key "${{ secrets.BOOKVERSE_KEY }}"
